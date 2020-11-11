@@ -1,0 +1,20 @@
+.launchItem {
+  background-color: white;
+  border-radius: 8px;
+  padding: 30px;
+  font-weight: 500;
+}
+.launchName {
+  color: #474f98;
+  margin: 15px 0;
+  font-size: 22px;
+}
+
+@media screen and (min-width: 701px) {
+  .launchItem {
+    padding: 20px;
+  }
+  .launchName {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,20 @@
+.xspfilters {
+  background: white;
+  border-radius: 8px;
+  padding: 10px 10px 40px 10px;
+  align-self: start;
+}
+.xspfilters h2 {
+  font-size: 30px;
+}
+
+@media screen and (min-width: 701px) {
+  .xspfilters {
+    padding: 10px 0px 40px 0px;
+    font-size: 8px;
+  }
+  .xspfilters h2 {
+    padding: 0 10px;
+    font-size: 22px;
+  }
+}

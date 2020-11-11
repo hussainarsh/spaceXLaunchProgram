@@ -1,0 +1,18 @@
+.launchList {
+  display: grid;
+  grid-gap: 25px;
+}
+
+@media screen and (min-width: 1024px) {
+  .launchList {
+    grid-template-columns: repeat(4, calc(25% - 7.5px));
+    grid-gap: 10px;
+  }
+}
+
+@media screen and (min-width: 701px) and (max-width: 1023px) {
+  .launchList {
+    grid-template-columns: repeat(2, calc(50% - 5px));
+    grid-gap: 10px;
+  }
+}

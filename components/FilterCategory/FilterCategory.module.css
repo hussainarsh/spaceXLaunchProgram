@@ -1,0 +1,35 @@
+.filterCategory {
+  text-align: center;
+  margin: 5px 0 35px 0;
+}
+
+.filterType {
+  display: inline-block;
+  border-bottom: 2px solid #c4bdbb;
+  width: 75%;
+  margin: 0 0 15px 0;
+  padding-bottom: 4px;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.filterValues {
+  display: grid;
+  grid-template-columns: minmax(25%, auto) minmax(25%, auto);
+  justify-content: space-between;
+  padding: 0 25px;
+  grid-gap: 25px;
+}
+
+@media screen and (min-width: 701px) {
+  .filterCategory {
+    margin: 5px 0 25px 0;
+  }
+  .filterType {
+    font-size: 18px;
+  }
+  .filterValues {
+    padding: 0 20px;
+    grid-gap: 15px;
+  }
+}
