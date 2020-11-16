@@ -3,7 +3,6 @@ import FilterCategory from './FilterCategory/FilterCategory';
 import styles from './XSPFilters.module.css'
 
 const XSPFilters = (props) => {
-
     const filterCategories = props.filterData.map(category =>
         <FilterCategory
             filterValues={category.data}

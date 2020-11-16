@@ -3,7 +3,6 @@ import FilterItem from '../FilterItem/FilterItem';
 import styles from './FilterCategory.module.css';
 
 const FilterCategory = (props) => {
-
     const onFilterClick = (value) => {
         props.onFilterApply(props.filerType, value);
     }

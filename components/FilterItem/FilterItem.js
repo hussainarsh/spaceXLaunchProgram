@@ -3,7 +3,7 @@ import styles from './FilterItem.module.css';
 
 const FilterItem = React.memo((props) => {
     return (
-        <button className={styles.filterItem + (props.isActive ? " active" : "")}
+        <button className={styles.filterItem + (props.isActive ? ` ${styles.active}` : "")}
             onClick={() => { props.onClick(props.value) }}>
             {props.value}
         </button>

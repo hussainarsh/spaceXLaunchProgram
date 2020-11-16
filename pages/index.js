@@ -1,90 +1,110 @@
 import React, {useState, useEffect} from 'react'
-import { createBrowserHistory } from "history";
 
 import Header from '../components/Header.js'
 import Footer from '../components/Footer.js'
 import Layout from '../components/Layout.js'
 import XSPFilters from '../components/XSPFilters.js';
-import LauchList from '../components/LaunchList/LaunchList';
-import { getParam, setParam } from '../helper/urlManipulation.js';
+import LaunchList from '../components/LaunchList/LaunchList';
 
-function HomePage({posts}) {
+function HomePage({data, query}) {
   let initialState = [{
         type: "launch_year",
         displayName: "Launch Year",
         data: new Array((new Date().getFullYear() - 2005)).fill().map((a, i) => 2006 + i),
+        activeItem: query['launch_year'] && parseInt(query['launch_year'])
     },
     {
         type: "launch_success",
         displayName: "Successful Launch",
         data: ["true", "false"],
+        activeItem: query['launch_success']
     },
     {
         type: "land_success",
         displayName: "Successful Landing",
         data: ["true", "false"],
+        activeItem: query['land_success']
     }]
 
     const [filterState, setFilterState] = useState(initialState);
     const [spaceXData, setSpaceXData] = useState([]);
-    const [urlQuery, setUrlQuery] = useState();
-    const [initialUrl, setInitialUrl] = useState()
 
     useEffect(() => {
-      setSpaceXData(posts);
+      setSpaceXData(data);
     }, [0])
 
     let launchList = <div></div>;
 
-    launchList = <LauchList launchData={spaceXData} />
+    launchList = <LaunchList launchData={spaceXData} />
 
-    const onFilterApply = (category, value) => {
-      const initialQueryString = require('query-string');
-      const currentQueries = getParam(initialQueryString);
-
-      const currentCategory = {}
-
-      if (currentCategory.activeItem && currentCategory.activeItem === value) {
-          currentQueries[category] = null;
-          currentCategory.activeItem = null;
+    function updateQueryStringParameter(uri, key, value) {
+      var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+      var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+      if (uri.match(re)) {
+        return uri.replace(re, '$1' + key + "=" + value + '$2');
       }
       else {
-          currentCategory.activeItem = value;
-          currentQueries[category] = value;
+        return uri + separator + key + "=" + value;
       }
-      const queryString = setParam(currentQueries);
-
-      const history = createBrowserHistory();
-
-      history.push("?" + queryString);
-
-      setUrlQuery(queryString)
     }
 
-    useEffect(() => {
-      fetch(`https://api.spaceXdata.com/v3/launches?limit=100&${urlQuery}`).then(response => response.json()).then(data => setSpaceXData(data));
-    }, [urlQuery])
+    function showSpinner() {
+      const spinner = document.getElementById("spinner");
+      spinner.className = "show";
+      setTimeout(() => {
+        spinner.className = spinner.className.replace("show", "");
+      }, 5000);
+    }
 
-    useEffect(() => {
-      setInitialUrl(window.location.href)
-    }, [0])
+    function hideSpinner() {
+      const spinner = document.getElementById("spinner");
+      spinner.className = spinner.className.replace("show", "");
+    }
+
+    const onFilterApply = (category, value) => {
+
+      showSpinner()
+      const currentCategory = filterState.find(curCat => curCat.type === category);
+      currentCategory.activeItem = value;
+
+      let queryString = updateQueryStringParameter(location.search, category, value);
+      window.history.pushState("", "", queryString);
+      fetch(`https://api.spaceXdata.com/v3/launches${queryString}&limit=100`).then(response => response.json()).then(
+        (data) => {
+          setSpaceXData(data)
+
+          let result = filterState.map(item => {
+            if (item.type === currentCategory.type) {
+              return {...item, ...currentCategory};
+            }
+            return item;
+          });
+          
+          setFilterState(result);
+          hideSpinner()
+        }
+      );
+    }
 
   return <>
   <Header />
     <Layout>
       <XSPFilters filterData={filterState} onFilterApply={onFilterApply} />
+      <div id="spinner"></div>
       {launchList}
     </Layout>
   <Footer />
   </>
 }
 
-export async function getStaticProps() {
-  const res = await fetch('https://api.spaceXdata.com/v3/launches?limit=100')
-  const posts = await res.json()
+export async function getServerSideProps({query}) {
+  const queryString = require('query-string');
+  const res = await fetch(`https://api.spaceXdata.com/v3/launches?${queryString.stringify(query)}&limit=100`)
+  const data = await res.json()
   return {
     props: {
-      posts,
+      data,
+      query
     },
   }
 }
